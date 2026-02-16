@@ -1,0 +1,93 @@
+\section{Integrazione numerica}
+$$
+  I = \int_{a}^{b} f(x) \,dx = F(b) - F(a)
+  \land F \in \{f: [a, b] \to \mathbb{R}\}
+$$
+Formule di quadratura numerica:
+$$
+  I \approx Q(f) = \sum_{k=1}^M \omega_k f(x_k)
+$$
+
+\subsection{Regola dei rettangoli}
+Considero $f: [a, b] \to \mathbb{R}$ e divido $[a, b]$ in $M$ sottointervalli 
+di uguale ampiezza $h = \frac{b-a}{M}$:
+$$
+  \Omega_k = [x_{k-1}, x_k]
+$$
+Da cui segue che:
+$$
+  I = \int_{a}^{b} f(x) \,dx = \sum_{k=1}^M \int_{\Omega_k} f(x) \,dx
+$$
+Approssimiamo $I$ come:
+$$
+  I \approx \sum_{k=1}^{M} f(x_{k-1}) \cdot h = h \sum_{k=1}^{M} f(x_k)
+$$
+
+\paragraph{Convergenza}
+Dai nostri metodi speriamo che:
+$$
+  Q(f) \xrightarrow{h \to 0} I
+$$
+Ovvero che:
+$$
+  err(h) = |I - Q(f)| \to_{h \to 0} 0
+$$
+Con $err(h) \leq C(a, b; f) \cdot h$
+Ovvero quando dimezzo h dimezzo err(h). 
+Inoltre, la formula dei rettangoli ha ordine di accuratezza 1.
+La formula dei rettangoli è una formula ad un punto.
+
+\subsection{Regola del punto medio}
+È analoga alla regola dei rettangoli, ma anziché considerare come altezza $f(x_k)$, 
+considero $f(c_k)$, con $c_k = \frac{x_k + x_{k-1}}{2}$. 
+Quindi:
+$$
+  Q(f) = h \sum_{k=1}^{M} f(c_k)
+$$
+Questo metodo ha ordine di accuratezza 2:
+$$
+  err(h) \leq C(a, b; f) \cdot h^2
+$$
+
+\subsection{Formula del trapezio}
+Considero le medesime premesse dei casi precedenti. 
+Costruisco dei trapezi su ogni intervallo con basi $f(x_k)$ e $f(x_{k-1})$.
+$$
+  Q(f) = \frac{h}{2} \sum_{k=1}^{M} [f(x_{k-1}) + f(x_k)]
+$$
+La formula del trapezio è accurata di ordine 2. 
+La formula del trapezio è a due punti.
+
+\subsection{Formula di Gauss}
+Considero i seguenti punti:
+\begin{align*}
+  \gamma_{k1} = x_{k-1} + (1 - \frac{1}{\sqrt{3}})\frac{h}{2} \\
+  \gamma_{k2} = x_{k-1} + (1 + \frac{1}{\sqrt{3}})\frac{h}{2}
+\end{align*}
+Da cui segue che:
+$$
+  Q(f) = \frac{h}{2}\sum_{k=1}^{M}[f(\gamma_{k1}) + f(\gamma_{k2})]
+$$
+Si può dimostrare che il metodo è accurato di ordine 4:
+$$
+  err(h) \leq C(a, b; f) \cdot h^4
+$$
+
+\subsection{Formula di Simpson}
+Considero $f(x_{k-1})$, $f(c_k)$ e $f(x_k)$. 
+Su ogni $\Omega_k$ costruisco quindi la parabola che interpola $f(x)$. 
+$$
+  Q(f) = \frac{h}{6}\sum_{k=1}^{M} [f(x_{k-1}) + 4f(c_k) + f(x_k)]
+$$
+Questa è una formula a tre punti con accuratezza di ordine 4.
+
+\subsection{Montecarlo}
+Al contrario delle formule precedenti, questa è una formula stocastica (non deterministica).
+Costruisco un rettangolo $R = [a, b] \times [0, \max\limits_{x \in [a,b]} f(x)]$. 
+Prendo dei punti casuali nel rettangolo, $K$ cadranno sotto la funzione e $N$ sono i totali.
+$$
+  Q(f) = \frac{K}{N} A_R
+$$
+Dove $A_R$ è l'area del rettangolo. 
+Montecarlo è un metodo molto lento, ma il suo ordine di accuratezza non decresce 
+in dimensioni superiori a 1.

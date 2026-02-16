@@ -1,0 +1,7 @@
+set xlabel 'iter'
+set ylabel 'x_n'
+set terminal pngcairo size 900,600
+set output 'soluzione.png'
+plot 'equazione.txt' using :1 with lines title 'Soluzione' lt rgb 'green'
+set output
+exit

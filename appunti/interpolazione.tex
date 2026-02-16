@@ -1,0 +1,43 @@
+\section{Interpolazione di polinomi}
+È utilizzata per approssimare una qualche funzione $f(x)$ con un polinomio $p_n \in \mathbb{R}[x]_{\leq n}$
+Un altro uso comune è, dato un insieme di punti $\{(x_i, y_i)\}_{i=0}^n$, trovare un polinomio 
+che meglio approssima questi dati (detti nodi), ovvero un polinomio tale che $p_n(x_i) = y_i$.
+
+\paragraph{Interpolazione di Lagrange}
+Data una griglia $X = \{x_0, x_1,\dots , x_n\}$ con $x_i < x_{i+1} \forall i \in \{0, 1,\dots , n\}$
+Definiamo, sulla griglia $X$ gli $n+1$ polinomi di base di Lagrange come:
+$$
+l_i(x) = \prod_{j \neq i} \frac{x-x_j}{x_i-x_j}\ i \in \{0, 1,\dots , n\}
+$$
+Tali polinomi sono tutti di grado n.
+Notiamo che:
+$$
+l_i(x_j) = \delta_{ij} =
+\left\{
+  \begin{array}{ll}
+    0 & j \neq i\\
+    1 & j=i
+  \end{array}
+\right.
+$$
+Si dimostra inoltre che tali polinomi sono una base dello spazio vettoriale $\mathbb{R}[x]_{\leq 2}$.\\
+Il polinomio di interpolazione di Lagrange sarà:
+$$
+p_n(x) = \sum_{i=0}^n y_i \cdot l_i(x)
+$$
+Si dimostra inoltre che tale polinomio è unico.
+
+\paragraph{Errore}
+Si considera l'errore come $e_n(x) = f(x) - p_n(x)$, $x = x_i \implies e_n(x) = 0$
+Inoltre si può dimostrare che:
+$$
+e_n(x) = \prod_{i=0}^n (x-x_i)\frac{f^{(n+1)}(\xi)}{(n+1)!}
+$$
+Si noti che non è vero che $e_n \xrightarrow{n \to \infty}0$.
+
+\paragraph{Fenomeno di Runge}
+Avviene quando si approssimano funzioni a gradini.
+Per limitare la funzione nodale si scelgono i nodi di Chebychev:
+$$
+x_i = \frac{a+b}{2} + \frac{b-a}{2} \cdot \cos\left(\frac{2k+1}{2(n+1)}\pi \right)
+$$

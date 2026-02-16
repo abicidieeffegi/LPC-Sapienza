@@ -1,0 +1,117 @@
+\section{Risoluzione di sistemi lineari $Ax=b$}
+I metodi per risolvere sistemi lineari sono suddivisi in metodi diretti e iterativi.
+I metodi diretti vanno a riempire la matrice (non efficienti con matrici sparse).
+I metodi diretti sono efficaci con sistemi piccoli ($1000 \times 1000$) oppure quando 
+è necessario risolvere molti sistemi del tipo $Ax=b$, $Ax=c$, $Ax=d$, ...
+Negli altri casi convengono metodi iterativi.
+In tutti i metodi esposti considereremo $A \in M_{n, n}(\mathbb{R}), b,x \in \mathbb{R}^n$
+
+L'idea generale è "splittare" la matrice $A$:
+\begin{align*}
+  &A = M - N \ \land \ M \in GL_n(\mathbb{R}) \\
+  &\implies (M-N)x = b \\
+  &\implies x = M^{-1}(Nx + b) \\
+\end{align*}
+Quest'ultima equazione ricorda il metodo del punto fisso: dato $x^{(0)}$ iniziale definisco $\forall k \geq 0$:
+$$
+  x^{(k+1)} = M^{-1}(Nx^{(k)} + b)
+$$
+Considero l'errore $e^{(k)} = x^{(k)} - x$ e verifico se:
+\begin{align*}
+  &\lim_{k \to \infty} e^{(k)} = \left(\begin{array}{c}
+      0\\
+      \vdots\\
+      0\\
+    \end{array}\right)\\
+  &\implies \max\limits_{i = 1,\dots,n} |x_i^{(k)} - x_i| \to 0
+\end{align*}
+Per cui servirebbe il concetto di norma infinito $||\cdot||_{\infty}$.
+\begin{align*}
+  &x^{(k+1)} - x = M^{-1}N(x^{(k)} - x) \\
+  &\implies e^{(k+1)} = (M^{-1}N)^k e^{(0)} \\
+  &\implies ||e^{(k+1)}||_{\infty} \leq ||M^{-1}N||_{\infty}^k ||e^{(0)}||_{\infty} \xrightarrow{k \to \infty} 0 \iff ||M^{-1}N||_{\infty} < 1
+\end{align*}
+
+\subsection{Metodo di Jacobi}
+Prendo $M$ matrice diagonale con la diagonale di $A$, $N = M-A$
+$$
+a_{ii}x_{i}^{(k+1)} = b_i - \sum_{\substack{j=1 \\ j \neq i}}^n a_{ij}x_j^{(k)}
+$$
+Da cui segue, dividendo tutto per $a_{ii}$
+$$
+x_{i}^{(k+1)} = \frac{b_i}{a_{ii}} - \frac{1}{a_{ii}} \cdot \sum_{\substack{j=1 \\ j \neq i}}^n a_{ij}x_j^{(k)}
+$$
+Una condizione sufficiente per la convergenza è che $A$ sia a dominanza diagonale stretta,
+ovvero:
+$$
+\sum_{\substack{j=1 \\ j \neq i}}^n a_{ij} < a_{ii}
+$$
+Si noti che Jacobi ha bisogno di tenere in memoria 2 passi di vettori soluzioni.
+
+\subsection{Metodo di Gauss-Seidel}
+$A = M + N$ con $M$ triangolare inferiore di $A$ e $N$ triangolare superiore con diagonale nulla.
+$$
+Mx^{(k+1)} = b + Nx^{(k)}
+$$
+L'equazione 1 viene risolta come per Jacobi:
+$$
+a_{11}x_1^{(k+1)} = b_1 - \sum_{j=1 \ j \neq 1}^n a_{1j}x_j^{(k)}
+$$
+L'equazione 2 risulta:
+$$
+a_{22}x_2^{(k+1)} = b_2 - \sum_{j=1 \ j \neq 2}^n a_{2j}x_j^{(k)} - a_{21}x^{(k+1)}
+$$
+E questo comportamento viene reiterato.
+Si noti che Gauss-Seidel ha bisogno di tenere in memoria solo un array di soluzioni.
+
+\paragraph{Criteri di arresto}
+Questi criteri valgono ovviamente solo per i metodi iterativi. 
+\begin{itemize}
+  \item numero di iterazioni
+  \item $e^{(k)} < tol$
+  \item check su elementi diagonali per verificare che non siano troppo piccoli
+\end{itemize}
+
+\subsection{Algoritmo di Gauss}
+È un metodo diretto per risolvere sistemi lineari. Considero:
+$$
+Ux=b, U \in \mathbb{R}^{n \times n}, b \in \mathbb{R}^n
+$$
+Se U fosse triangolare superiore (o inferiore) la risoluzione risulta immediata:
+$$
+x_n = \frac{b_n}{U_{nn}}
+$$
+In caso il sistema non sia triangolare (a scala), si applicano operazioni elementari di riga 
+fino a ridurre la matrice.
+\begin{align*}
+  Ax = b \leadsto MAx = Ux = Mb \\
+  A = \left[\begin{array}{ccc}
+      a_{11} &\dots &a_{1n} \\
+      \vdots &\ddots &\vdots \\
+      a_{n1} &\dots &a_{nn}
+  \end{array}\right]
+  \leadsto M \cdot \left[\begin{array}{ccc}
+      a_{11} &\dots &a_{1n} \\
+      \vdots &\ddots &\vdots \\
+      a_{n1} &\dots &a_{nn}
+  \end{array}\right]
+\end{align*}
+Se $a_{11} \approx 0$ cerco $\displaystyle{\max_{k \in \{2,\dots,n\}}} \{a_{k1}\}$. 
+Trovato questo elemento nella riga $p$, scambio la riga $1$ con la riga $p$.
+Questa tecnica si chiama \emph{pivoting}. 
+Applicare il pivoting risulta numericamente più stabile.
+Dopo un'iterazione la matrice diventa:
+$$
+A_2^{(1)} = A_2^{(0)} - m_{21}A_1^{(0)}
+$$
+Con $m_{21} = \frac{a_{21}}{a_{11}}$.
+Per proseguire ad annullare tutti i termini $a_{n1}$ trovo moltiplicatori del tipo $m_{n1} = \frac{a_{n1}}{a_{11}}$
+La matrice $A^{(1)}$ diventa quindi:
+$$
+A^{(1)} = \left[\begin{array}{ccc}
+    a_{11} &\dots &a_{1n} \\
+    0 &\dots &a_{2n} \\
+    \vdots &\ddots &\vdots \\
+    0 &\dots &a_{nn}^{(1)}
+  \end{array}\right]
+$$

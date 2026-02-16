@@ -1,0 +1,7 @@
+set xlabel 'iter'
+set ylabel 'EOC'
+set terminal pngcairo size 900,600
+set output 'eoc.png'
+plot 'equazione.txt' using :3 with lines title 'EOC' lt rgb 'blue'
+set output
+exit

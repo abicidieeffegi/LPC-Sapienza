@@ -1,0 +1,17 @@
+set term pngcairo size 1600,1000
+set output 'E0.png'
+set multiplot layout 2,2 columns
+set title 'Funzione integranda'
+set xrange[0:3.141593]
+p x*exp(-x)*cos(2*x) w l t 'f(x)'
+set title 'Integrali numerici con diversi metodi'
+set xrange[0:1048576]
+set logscale x
+p 'integrals.txt' u :(column('R')) w l t 'Rettangoli', '' u (column('samples')):(column('M')) w l t 'MidPoint', '' u (column('samples')):(column('T')) w l t 'Trapezi', '' u (column('samples')):(column('G')) w l t 'Gauss', '' u (column('samples')):(column('S')) w l t 'Simpson'
+set title 'Errori di integrali numerici con diversi metodi'
+set logscale y
+p 'integrals.txt' u (column('samples')):(column('errR')) w l t 'Errore Rettangoli', '' u (column('samples')):(column('errM')) w l t 'Errore MidPoint', '' u (column('samples')):(column('errT')) w l t 'Errore Trapezi', '' u (column('samples')):(column('errG')) w l t 'Errore Gauss', '' u (column('samples')):(column('errS')) w l t 'Errore Simpson'
+unset logscale y
+set title 'EOC di diversi metodi'
+p 'integrals.txt' u :(column('EOCR')) w l t 'Rettangoli', '' u (column('samples')):(column('EOCM')) w l t 'MidPoint', '' u (column('samples')):(column('EOCT')) w l t 'Trapezi', '' u (column('samples')):(column('EOCG')) w l t 'Gauss', '' u (column('samples')):(column('EOCS')) w l t 'Simpson'
+unset multiplot

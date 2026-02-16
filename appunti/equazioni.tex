@@ -1,0 +1,85 @@
+\section{Metodi di risoluzione di equazioni}
+Sia $f: \mathbb{R} \to \mathbb{R}$ continua in $[a, b]$ tale che $f(a) \cdot f(b) < 0$
+
+L'obiettivo degli algoritmi presentati è approssimare la soluzione $\alpha \in [a, b] \mid f(\alpha) = 0$
+Notare che l'esistenza di $\alpha$ è garantita dal teorema di esistenza degli zeri.
+Questi metodi funzionano costruendo successioni $\{x_k\}_k$ che convergono ad $\alpha$.
+
+\subsection{Metodo di bisezione}
+
+Considero l'intervallo $[a_0,b_0] = [a,b]$ e il punto medio $\xi_0 = \frac{a_0 + b_0}{2}$
+ora, se $f(\xi_0) \cdot f(b) < 0 \implies [a_1, b_1] = [\xi_0, b_0]$, altrimenti $[a_1, b_1] = [a_0, \xi]$. Reitero il processo un numero arbitrario di volte per approssimare $\alpha$
+
+\paragraph{Convergenza}
+Definiamo l'errore al passo k come $e_k = |\alpha - \xi_k|$ e notiamo che $e_k \leq \frac{b_k - a_k}{2} \leq \frac{b - a}{2^{k+1}} \to 0$ 
+e che $\lim_{k \to infty} \xi_k = 0$
+Il metodo di bisezione ha convergenza lineare.
+
+\paragraph{Tolleranza}
+Se richiedo che $e_k \leq tol$ ho bisogno di un numero di passaggi tali che $\frac{b-a}{2^k} \leq tol$ e pertanto $k \geq \left\lceil \log_2 \left(\frac{b-a}{tol}\right) \right\rceil$
+Da questo calcolo segue che ogni 4 iterazioni la stima di $\alpha$ migliora di una cifra decimale.
+
+
+\paragraph{Criteri di arresto}
+\begin{itemize}
+  \item Residuo: $e_k = |\alpha - \xi_k| \leq tol$
+  \item Distanza dagli estremi: $\frac{|b_k - a_k|}{|\xi_k|} \leq tol$
+  \item Numero massimo di iterazioni
+\end{itemize}
+
+
+\subsection{Metodo del punto fisso}
+
+Poniamo $f(x), g(x) | g(x) = x + f(x)$.
+$$ \implies f(\alpha) = 0 \iff g(\alpha) = \alpha $$
+Il punto fisso di $g$ è $\bar x : \bar x= g(\bar x)$.
+
+L'algoritmo consiste nel costruire una successione $x_k \mid x_{k+1} = g(x_k) $, 
+con $x_0$ input dell'utente.
+
+\paragraph{Convergenza} 
+Consideriamo l'errore $e_k$
+$$
+  e_{k+1} = |\alpha - x_{k+1}| = |g(\alpha) - g(x_k)| \leq |g'(\xi_k)| \cdot |\alpha - x_k| 
+$$
+Da cui segue che $e_k \to 0$ se $|g'(x)|<1$.
+L'algoritmo ha convergenza lineare, tanto più veloce quanto più $|g'(x)|$ è piccola.
+
+Per trovare una $g$ adatta, pongo:
+$$
+g(x) = x + \lambda f(x)
+$$
+con $\lambda : |g'(x)| < 1 \implies |1 + \lambda f'(x)| < 1$.
+
+\paragraph{Criteri di arresto}
+\begin{itemize}
+  \item Numero massimo di iterazioni
+  \item Residuo: $e_k = |\alpha - x_k| \leq tol$
+  \item Vicinanza tra iterate: $\frac{|x_{k+1} - x_k}{|x_{k+1}|} \leq tol$
+\end{itemize}
+
+\subsection{Metodo di Newton}
+È un riadattamento del metodo del punto fisso. Si pone $g(x) = x - \frac{f(x)}{f'(x)}$
+Da cui segue che $x_{x+1} = x_k - \frac{f(x_x)}{f'(x+k)}$.
+
+\paragraph{Convergenza}
+$$
+0 = f(\alpha) = f(x_k) + (\alpha - x_k)f'(x_k) + O((\alpha - x_k)^2\\
+\implies \alpha \approx x_k - \frac{f(x_k)}{f'(x_k)}
+$$
+Dall'espansione con Taylor segue che il metodo diverge con velocità quadratica: $e_k \leq C{e_{k-1}^2}$
+Il metodo non converge sempre: se la derivata è troppo piccola questo non converge.
+Per questo motivo spesso si usa il metodo di Newton con "warm start":
+qualche iterata con il metodo di bisezione e poi metodo di Newton.
+
+I criteri di arresto sono i medesimi del metodo del punto fisso.
+
+\subsection{Velocità di convergenza}
+Un metodo ha convergenza di ordine p se:
+$$ \exists C>0 \mid e_{k+1} \leq C \cdot {e_k}^p $$
+Per calcolare sperimentalmente l'ordine di convergenza di un metodo di risoluzione, 
+calcolo l'errore di ogni iterata $e_k$ e osservo che:
+$$ 
+log(e_k) \approx log(e_{k-1}^p) + log(c) \\
+\implies p \approx \frac{\log(\frac{e_{k+1}}{e_k})}{\log({\frac{e_k}{e_{k+1}}})}
+$$
